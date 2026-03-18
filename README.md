@@ -53,6 +53,13 @@ GitHub Actions (CI/CD + Drift Detection)
 | GitHub Actions | Executes CI/CD + drift detection | 
 | Drift Workflow | Detects + auto-fixes drift |
 | GitHub Issues | Tracks drift events (audit + visibility) |
+
+# 🔄 How It Works
+
+-  GitHub Actions triggers every minute
+-  Terraform plan compares actual vs. desired state
+-  If drift detected (exit code 2): auto-apply fixes
+-  Create/close GitHub issues and Slack notifications
 	
 
 # 🧪 How Drift is Handled
