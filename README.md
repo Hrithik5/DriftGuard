@@ -1,5 +1,5 @@
 
-# DriftGuard — Risk-Aware Terraform Reconciliation Engine
+# DriftGuard : Risk-Aware Terraform Reconciliation Engine
 
 DriftGuard is a risk-aware infrastructure reconciliation system built to continuously detect, classify, and respond to Terraform drift across AWS environments.
 Instead of blindly auto-remediating every infrastructure change, DriftGuard evaluates operational risk first and dynamically decides how the system should respond.
