@@ -1,77 +1,92 @@
 
-# Terraform Drift Detection & Auto-Remediation
+# DriftGuard — Risk-Aware Terraform Reconciliation Engine
 
-Automated system to detect and remediate infrastructure drift in real-time using Terraform, GitHub Actions, and AWS.
-
-Designed to simulate production-grade infrastructure governance with continuous reconciliation, audit visibility, and self-healing capabilities.
+DriftGuard is a risk-aware infrastructure reconciliation system built to continuously detect, classify, and respond to Terraform drift across AWS environments.
+Instead of blindly auto-remediating every infrastructure change, DriftGuard evaluates operational risk first and dynamically decides how the system should respond.
+Built as an internal infrastructure governance prototype using Terraform, GitHub Actions, AWS, Python, Slack, and GitHub Issues.
 
 --- 
 
-# 🚀 What This Project Does
-- Detects infrastructure drift every 1 minute
-- Automatically remediates drift using ```terraform apply```
-- Tracks drift events via GitHub Issues (audit trail)
-- Supports multi-environment setup (dev + prod)
-- Enforces infrastructure consistency without manual intervention
+# 🚀 Features
+- Continuous Terraform drift detection
+- Risk-aware drift classification
+- Severity-based remediation workflow
+- Automatic Terraform reconciliation
+- Slack alert routing by severity
+- GitHub Issues audit trail
+- Terraform JSON plan parsing
+- Multi-environment support (dev + prod)
+- Remote Terraform state management
+- Infrastructure governance & visibility
 
-# 🧠 Why This Exists
-In real systems, infrastructure drift happens due to:
-- Manual changes in AWS Console 
-- External scripts/tools. 
-- Misconfigurations over time
+--- 
 
-This project implements a continuous reconciliation model:
+# 🛠 Tech Stack
+|  Component | Technology  |
+|---|---|
+| Infrastructure as Code | Terraform | 
+| Cloud Provider | AWS |
+| Risk Engine | Python | 
+| Notification | Slack Webhooks |
+| Audit Trail | Github Issues |
+| Remote Backend + State Locking | AWS S3 |
 
-> Terraform state + GitHub Actions act as the source of truth enforcement layer
+--- 
 
 # 🏗️ Architecture
 ```
-GitHub (Code + Workflows)
-        │
-        ▼
-GitHub Actions (CI/CD + Drift Detection)
-        │
-        ├───────────────┐
-        ▼               ▼
-   AWS Infrastructure   S3 Backend (State + Locking)
- (VPC, ALB, ASG, EC2)       ↑
-        │                   │
-        └──── Drift ────────┘
-                Detection
-
-+ GitHub Issues → Audit trail
-+ Slack (optional) → Alerts
+GitHub Actions Scheduler
+          ↓
+Terraform Plan Generation
+          ↓
+Terraform JSON Parser
+          ↓
+Risk Classification Engine
+          ↓
+Decision Layer
+ ┌────────┼───────────┐
+ ↓        ↓           ↓
+AutoFix  Escalation  Alerting
+          ↓
+Slack Routing Engine
+          ↓
+GitHub Audit Trail
 
 ```
 
-# ⚙️ Core Components
+--- 
 
-|  Component | Purpose  |
+# ⚙️ How It Works
+- GitHub Actions triggers scheduled Terraform drift checks
+- Terraform generates a plan and exports JSON output
+- Python risk engine analyzes infrastructure changes
+- Drift is assigned a severity score
+- Decision layer determines remediation behavior
+- Alerts are routed to Slack channels dynamically
+- High/Critical drift events create GitHub Issues
+- Infrastructure is reconciled based on severity rules
+
+--- 
+
+# 🔍 Severity Model
+|  Severity | Action  |
 |---|---|
-| Terraform | Defines desired infrastructure state | 
-| S3 Backend | Centralized state + locking |
-| GitHub Actions | Executes CI/CD + drift detection | 
-| Drift Workflow | Detects + auto-fixes drift |
-| GitHub Issues | Tracks drift events (audit + visibility) |
+| LOW  | Auto-remediate silently |
+| MEDIUM | Auto-remediate + Slack alert |
+| HIGH | Create GitHub Issue + require approval |
+| CRITICAL | Freeze remediation + escalate immediately |
 
-# 🔄 How It Works
+--- 
 
--  GitHub Actions triggers every minute
--  Terraform plan compares actual vs. desired state
--  If drift detected (exit code 2): auto-apply fixes
--  Create/close GitHub issues and Slack notifications
-	
+## 📌 Example Risk Weights
+```
+	RISK_WEIGHTS = {
+    "security_group_open_ingress": 90,
+    "iam_policy_change": 85,
+    "s3_public_access": 80,
+    "instance_type_change": 40,
+    "asg_capacity_change": 35,
+    "missing_tags": 10
+}
 
-# 🧪 How Drift is Handled
-- Infrastructure modified outside Terraform
-- Drift workflow runs (every 1 min)
-- terraform plan detects mismatch
-- GitHub Issue created
-- terraform apply restores state
-- Issue closed automatically
-
-# 📌 Key Takeaways
-- Demonstrates real-world drift problem + solution
-- Implements continuous infra reconciliation
-- Combines CI/CD + security enforcement
-- Shows production-oriented Terraform practices
+```
