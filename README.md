@@ -88,5 +88,4 @@ GitHub Audit Trail
     "asg_capacity_change": 35,
     "missing_tags": 10
 }
-
 ```
